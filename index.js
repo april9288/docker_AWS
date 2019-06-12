@@ -1,23 +1,20 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
+
+const Item = require('./models/Item');
 
 const app = express();
-
 app.set('view engine', 'ejs');
+app.use(express.json())
+app.use(express.urlencoded({extended: true}))
 
-app.use(bodyParser.urlencoded({ extended: false }));
-
+let mongoURL = (process.env.NODE_ENV === 'test') ? "127.0.0.1:27017" : "mongo:27017"
 // Connect to MongoDB
 mongoose
-  .connect(
-    'mongodb://mongo:27017/docker-node-mongo',
-    { useNewUrlParser: true }
-  )
+  .connect(`mongodb://${mongoURL}/aws-james-node`, { useNewUrlParser: true })
   .then(() => console.log('MongoDB Connected'))
   .catch(err => console.log(err));
 
-const Item = require('./models/Item');
 
 app.get('/', (req, res) => {
   Item.find()
